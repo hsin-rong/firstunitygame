@@ -1,0 +1,56 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+[RequireComponent(typeof(Rigidbody2D))]
+public class playerControler : MonoBehaviour
+{
+    public float speed;
+    Rigidbody2D rigid2D;
+    public float speed_x_constraint;
+    public GameObject fireprefab;
+    // Start is called before the first frame update
+    void Start()
+    {
+        rigid2D = this.gameObject.GetComponent<Rigidbody2D>();
+        print("start");    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if(Input.GetKeyDown(KeyCode.W))
+        {
+            rigid2D.AddForce(new Vector2(0, 20*speed), ForceMode2D.Impulse);
+        }
+        if (Input.GetKey(KeyCode.D))
+        {
+            rigid2D.velocity = new Vector2(speed_x_constraint, rigid2D.velocity.y);
+            
+        }
+        if (Input.GetKey(KeyCode.A)) 
+        {
+            rigid2D.velocity = new Vector2(-speed_x_constraint, rigid2D.velocity.y);
+        }
+        //constraint
+        if (rigid2D.velocity.x > speed_x_constraint)
+        {
+            rigid2D.velocity = new Vector2(speed_x_constraint, rigid2D.velocity.y);
+        }
+        if (rigid2D.velocity.x < -speed_x_constraint)
+        {
+            rigid2D.velocity = new Vector2(-speed_x_constraint, rigid2D.velocity.y);
+        }
+        //fire
+        if(Input.GetKeyDown(KeyCode.Space))
+        {
+            Instantiate(fireprefab, this.transform.position, Quaternion.identity);
+        }
+    }
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Enemy")
+        {
+            collision.gameObject.SendMessage("ApplyDamage", 10);
+        }
+    }
+}
